@@ -1,0 +1,12 @@
+name: HavenDoor
+version: ${project.version}
+main: fr.hephaisto.havendoor.HavenDoor
+api-version: 1.14
+depend: [Vault]
+authors: [Hephaisto]
+description: Plugin d'achat de portes
+commands:
+  sellalldoor:
+    description: Vends toutes ses portes
+  setdoor:
+    description: Place une porte à notre emplacement
