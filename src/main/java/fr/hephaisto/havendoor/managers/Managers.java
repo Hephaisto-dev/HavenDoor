@@ -92,7 +92,12 @@ public class Managers {
                 instance.getConfig().set(path+".coordonnees_" + i + ".Z", loc.getZ());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Monde", loc.getWorld().getName());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Admin", player.getName());
-
+                if (path.equals("portes")){
+                    doors.add(loc, null);
+                }
+                if (path.equals("panneaux")){
+                    signs.add(loc, true);
+                }
                 player.sendMessage("§aVotre nouveau "+path" a été enregistré avec succès !");
             }
         }
