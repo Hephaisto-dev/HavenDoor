@@ -18,15 +18,7 @@ public class CommandSellDoors implements CommandExecutor {
                 player.sendMessage("§aExecution: /sellalldoor ");
                 return false;
             }
-            for (int i = 0; i < Managers.getManagers().getDoors().size(); i++){
-                Location location = (Location) Managers.getManagers().getDoors().keySet().toArray()[i];
-                Player player1 = Managers.getManagers().getDoors().get(location);
-                if (player1.getName().equals(player.getName())){
-                    Managers.getManagers().getDoors().replace(location,null);
-                    Location location1 = (Location) Managers.getManagers().getSigns().keySet().toArray()[i];
-                    Managers.getManagers().getSigns().replace(location1,true);
-                }
-            }
+            Managers.getManagers().deleteAllDoors(player);
             return false;
         }else{
             sender.sendMessage("Vous devez être un joueur pour executer cette commande !");

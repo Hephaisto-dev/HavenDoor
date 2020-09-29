@@ -2,10 +2,12 @@ package fr.hephaisto.havendoor.listeners;
 import fr.hephaisto.havendoor.managers.Managers;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Objects;
 
@@ -42,5 +44,11 @@ public class PlayersEvent implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onDisconnect (PlayerQuitEvent e){
+        Player player = e.getPlayer();
+        Managers.getManagers().deleteAllDoors(player);
     }
 }

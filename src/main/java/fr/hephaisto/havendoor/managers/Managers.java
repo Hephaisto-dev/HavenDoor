@@ -104,4 +104,16 @@ public class Managers {
             }
         }
     }
+
+    public void deleteAllDoors(Player player){
+        for (int i = 0; i < doors.size(); i++){
+            Location location = (Location) doors.keySet().toArray()[i];
+            Player player1 = doors.get(location);
+            if (player1.getName().equals(player.getName())){
+                doors.replace(location,null);
+                Location location1 = (Location) signs.keySet().toArray()[i];
+                signs.replace(location1,true);
+            }
+        }
+    }
 }
