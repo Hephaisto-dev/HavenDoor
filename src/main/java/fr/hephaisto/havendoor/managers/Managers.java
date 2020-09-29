@@ -16,7 +16,7 @@ public class Managers {
     private Map<Location, Boolean> signs;
 
     public void load(HavenDoor instance) {
-        instance = instance;
+        Managers.instance = instance;
         managers = this;
         doors = new HashMap<>();
         signs = new HashMap<>();
@@ -68,6 +68,7 @@ public class Managers {
                 double Y = instance.getConfig().getDouble(path + ".coordonnees_" + i + ".Y");
                 double Z = instance.getConfig().getDouble(path + ".coordonnees_" + i + ".Z");
                 String world = instance.getConfig().getString(path + ".coordonnees_" + i + ".Monde");
+                assert world != null;
                 World world1 = Bukkit.getWorld(world);
                 Location location = new Location(world1,X,Y,Z);
                 locations.add(location);
@@ -80,7 +81,7 @@ public class Managers {
         return doors;
     }
 
-    public Map<Location, boolean> getSigns() {
+    public Map<Location, Boolean> getSigns() {
         return signs;
     }
 
@@ -90,10 +91,16 @@ public class Managers {
                 instance.getConfig().set(path+".coordonnees_" + i + ".X", loc.getX());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Y", loc.getY());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Z", loc.getZ());
-                instance.getConfig().set(path+".coordonnees_" + i + ".Monde", loc.getWorld().getName());
+                instance.getConfig().set(path+".coordonnees_" + i + ".Monde", player.getWorld().getName());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Admin", player.getName());
-
-                player.sendMessage("§aVotre nouveau "+path" a été enregistré avec succès !");
+                
+                player.sendMessage("§aVotre nouveau "+path+" a été enregistré avec succès en!" + loc.toString());
+                if (path.equals("portes")){
+                  doors.put(loc, null);
+                }
+                if(path.equals("panneaux")){
+                  signs.put(loc, true);
+                }
             }
         }
     }
