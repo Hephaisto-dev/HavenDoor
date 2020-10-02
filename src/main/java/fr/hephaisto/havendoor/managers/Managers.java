@@ -24,23 +24,8 @@ public class Managers {
 
         instance.saveDefaultConfig();
 
-        System.out.println(signs);
-        System.out.println(doors);
-
         loadDoors();
         loadSigns();
-
-        for (Sign sign : signs){
-            System.out.println(sign.getId());
-            System.out.println(sign.getLoc());
-            System.out.println(sign.getOwner());
-        }
-        for (Door door : doors){
-            System.out.println(door.getId());
-            System.out.println(door.getLoc());
-            System.out.println(door.getOwner());
-        }
-
 
         Bukkit.getConsoleSender().sendMessage("§aLe plugin Haven Door se lance !");
 
