@@ -9,6 +9,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.math.RoundingMode;
 
 public class CommandSetDoor implements CommandExecutor {
     @Override
@@ -20,7 +23,7 @@ public class CommandSetDoor implements CommandExecutor {
                     player.sendMessage("§aExecution: /setdoor x y z");
                     return false;
                 }
-                player.getLocation().getBlock().setType(Material.OAK_DOOR);
+                player.getInventory().addItem(new ItemStack(Material.OAK_DOOR));
                 Managers.getManagers().addDoorsSign(player,"portes",player.getLocation());
                 double x = Double.parseDouble(args[0]);
                 double y = Double.parseDouble(args[1]);

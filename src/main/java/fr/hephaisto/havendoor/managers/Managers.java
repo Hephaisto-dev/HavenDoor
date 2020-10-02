@@ -1,10 +1,11 @@
 package fr.hephaisto.havendoor.managers;
 
+import fr.hephaisto.havendoor.Door;
 import fr.hephaisto.havendoor.HavenDoor;
+import fr.hephaisto.havendoor.Sign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -12,20 +13,34 @@ import java.util.*;
 public class Managers {
     private static HavenDoor instance;
     private static Managers managers;
-    private Map<Location, Player> doors;
-    private Map<Location, Boolean> signs;
+    private List<Door> doors;
+    private List<Sign> signs;
 
     public void load(HavenDoor instance) {
         Managers.instance = instance;
         managers = this;
-        doors = new HashMap<>();
-        signs = new HashMap<>();
+        doors = new ArrayList<>();
+        signs = new ArrayList<>();
+
+        instance.saveDefaultConfig();
+
+        System.out.println(signs);
+        System.out.println(doors);
 
         loadDoors();
         loadSigns();
 
+        for (Sign sign : signs){
+            System.out.println(sign.getId());
+            System.out.println(sign.getLoc());
+            System.out.println(sign.getOwner());
+        }
+        for (Door door : doors){
+            System.out.println(door.getId());
+            System.out.println(door.getLoc());
+            System.out.println(door.getOwner());
+        }
 
-        instance.saveDefaultConfig();
 
         Bukkit.getConsoleSender().sendMessage("§aLe plugin Haven Door se lance !");
 
@@ -48,28 +63,32 @@ public class Managers {
 
     public void loadDoors(){
         List<Location> locations = loadSignDoors("portes");
-        for (Location location : locations){
-            doors.put(location,null);
+        for (Location location : locations) {
+            Door door = new Door(location,locations.indexOf(location),null);
+            doors.add(door);
         }
     }
 
     public void loadSigns(){
         List<Location> locations = loadSignDoors("panneaux");
-        for (Location location : locations){
-            signs.put(location,true);
+        for (Location location : locations) {
+            Sign sign = new Sign(location,locations.indexOf(location),null);
+            signs.add(sign);
         }
     }
 
     private List<Location> loadSignDoors(String path){
         List<Location> locations = new ArrayList<>();
         for(int i = 0; i <= 100; i++) {
-            if(instance.getConfig().getInt(path+".coordonnees_" + i + ".Y") == 0) {
+            if(instance.getConfig().getInt(path+".coordonnees_" + i + ".Y") != 0) {
                 double X = instance.getConfig().getDouble(path + ".coordonnees_" + i + ".X");
                 double Y = instance.getConfig().getDouble(path + ".coordonnees_" + i + ".Y");
                 double Z = instance.getConfig().getDouble(path + ".coordonnees_" + i + ".Z");
                 String world = instance.getConfig().getString(path + ".coordonnees_" + i + ".Monde");
-                assert world != null;
-                World world1 = Bukkit.getWorld(world);
+                World world1 = Bukkit.getWorld("world");
+                if (world != null) {
+                    world1 = Bukkit.getWorld(world);
+                }
                 Location location = new Location(world1,X,Y,Z);
                 locations.add(location);
             }
@@ -77,43 +96,93 @@ public class Managers {
         return locations;
     }
 
-    public Map<Location, Player> getDoors() {
+    public List<Door> getDoors() {
         return doors;
     }
 
-    public Map<Location, Boolean> getSigns() {
+    public List<Sign> getSigns() {
         return signs;
     }
 
-    public void addDoorsSign(Player player,String path,Location loc) {
+    public void addDoorsSign(Player player, String path, Location loc) {
         for(int i = 0; i <= 100; i++){
             if(instance.getConfig().getInt(path+".coordonnees_" + i + ".Y") == 0){
-                instance.getConfig().set(path+".coordonnees_" + i + ".X", loc.getX());
-                instance.getConfig().set(path+".coordonnees_" + i + ".Y", loc.getY());
-                instance.getConfig().set(path+".coordonnees_" + i + ".Z", loc.getZ());
+                instance.getConfig().set(path+".coordonnees_" + i + ".X", (int) loc.getX());
+                instance.getConfig().set(path+".coordonnees_" + i + ".Y", (int) loc.getY());
+                instance.getConfig().set(path+".coordonnees_" + i + ".Z", (int) loc.getZ());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Monde", player.getWorld().getName());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Admin", player.getName());
-                
-                player.sendMessage("§aVotre nouveau "+path+" a été enregistré avec succès en!" + loc.toString());
+                instance.saveConfig();
+                instance.reloadConfig();
+                player.sendMessage("§aVotre nouveau "+path+" a été enregistré avec succès en! " + loc.toString());
                 if (path.equals("portes")){
-                  doors.put(loc, null);
+                    Door door = new Door(loc,i,null);
+                    doors.add(door);
                 }
                 if(path.equals("panneaux")){
-                  signs.put(loc, true);
+                    Sign sign = new Sign(loc,i,null);
+                    signs.add(sign);
                 }
+                break;
             }
         }
     }
 
     public void deleteAllDoors(Player player){
-        for (int i = 0; i < doors.size(); i++){
-            Location location = (Location) doors.keySet().toArray()[i];
-            Player player1 = doors.get(location);
-            if (player1.getName().equals(player.getName())){
-                doors.replace(location,null);
-                Location location1 = (Location) signs.keySet().toArray()[i];
-                signs.replace(location1,true);
+        for (Sign sign : signs){
+            if (sign.getOwner().equals(player.getUniqueId())){
+                sign.setOwner(null);
             }
         }
+        for (Door door : doors){
+            if (door.getOwner().equals(player.getUniqueId())){
+                door.setOwner(null);
+            }
+        }
+    }
+
+    public boolean isDoorOpenNotAllowed (Location location, Player player){
+        for (Door door: doors){
+            if (door.getLoc().equals(location) && door.getOwner().equals(player.getUniqueId())){
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean containLocation(Location location){
+        for (Sign sign : signs){
+            if (sign.getLoc()==location){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containPlayer(Player player){
+        for (Sign sign : signs){
+            if (sign.getOwner().equals(player.getUniqueId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Sign getLocation(Location location){
+        for (Sign sign : signs){
+            if (sign.getLoc()==location){
+                return sign;
+            }
+        }
+        return null;
+    }
+
+    public Door getDoorById(int id){
+        for (Door door: doors){
+            if (door.getId() == id){
+                return door;
+            }
+        }
+        return null;
     }
 }
