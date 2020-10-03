@@ -1,13 +1,10 @@
 package fr.hephaisto.havendoor.commands;
 
 import fr.hephaisto.havendoor.managers.Managers;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.*;
 
 public class CommandSellDoors implements CommandExecutor {
     @Override

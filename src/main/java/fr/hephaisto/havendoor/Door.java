@@ -35,4 +35,8 @@ public class Door {
     public boolean isOwner(UUID owner){
         return this.getOwner().equals(owner);
     }
+
+    public double getTop() {
+        return this.loc.getY() + 1;
+    }
 }

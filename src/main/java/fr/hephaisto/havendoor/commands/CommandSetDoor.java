@@ -11,8 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.math.RoundingMode;
-
 public class CommandSetDoor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -33,7 +31,7 @@ public class CommandSetDoor implements CommandExecutor {
                 player.sendMessage("§cVous n'avez pas la permission d'executer cette commande !");
             } return false;
         }else{
-            sender.sendMessage("Vous devez être un joueur pour executer cette commande !");
+            sender.sendMessage("Vous devez être un joueur pour éxecuter cette commande !");
         }
         return false;
     }

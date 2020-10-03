@@ -15,12 +15,14 @@ public class Managers {
     private static Managers managers;
     private List<Door> doors;
     private List<Sign> signs;
+    private Map<Player, Boolean> voting;
 
     public void load(HavenDoor instance) {
         Managers.instance = instance;
         managers = this;
         doors = new ArrayList<>();
         signs = new ArrayList<>();
+        voting = new HashMap<>();
 
         instance.saveDefaultConfig();
 
@@ -127,9 +129,17 @@ public class Managers {
     }
 
     public boolean isDoorOpenNotAllowed (Location location, Player player){
+        if (!containDoorLocation(location)){
+            return true;
+        }
         for (Door door: doors){
-            if (door.getLoc().equals(location) && door.getOwner().equals(player.getUniqueId())){
-                return false;
+            if (door.getLoc().getX() ==location.getX() && door.getLoc().getY() == location.getY() && door.getLoc().getZ() ==
+                    location.getZ() && door.getOwner()!=null && door.getOwner().equals(player.getUniqueId())){
+                return true;
+            }
+            if (door.getLoc().getX() ==location.getX() && door.getTop() == location.getY() && door.getLoc().getZ() ==
+                    location.getZ() && door.getOwner()!=null && door.getOwner().equals(player.getUniqueId())){
+                return true;
             }
         }
         return false;
@@ -138,6 +148,15 @@ public class Managers {
     public boolean containLocation(Location location){
         for (Sign sign : signs){
             if (sign.getLoc().getX() ==location.getX() && sign.getLoc().getY() == location.getY() && sign.getLoc().getZ() == location.getZ()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containDoorLocation(Location location){
+        for (Door door : doors){
+            if (door.getLoc().getX() ==location.getX() && door.getLoc().getY() == location.getY() && door.getLoc().getZ() == location.getZ()){
                 return true;
             }
         }
@@ -169,5 +188,9 @@ public class Managers {
             }
         }
         return null;
+    }
+
+    public Map<Player, Boolean> getVoting() {
+        return voting;
     }
 }
