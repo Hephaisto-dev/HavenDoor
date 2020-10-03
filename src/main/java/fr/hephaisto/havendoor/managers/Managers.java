@@ -115,12 +115,12 @@ public class Managers {
 
     public void deleteAllDoors(Player player){
         for (Sign sign : signs){
-            if (sign.getOwner().equals(player.getUniqueId())){
+            if (sign.getOwner()!=null && sign.getOwner().equals(player.getUniqueId())){
                 sign.setOwner(null);
             }
         }
         for (Door door : doors){
-            if (door.getOwner().equals(player.getUniqueId())){
+            if (door.getOwner()!=null && door.getOwner().equals(player.getUniqueId())){
                 door.setOwner(null);
             }
         }
@@ -137,7 +137,7 @@ public class Managers {
 
     public boolean containLocation(Location location){
         for (Sign sign : signs){
-            if (sign.getLoc()==location){
+            if (sign.getLoc().getX() ==location.getX() && sign.getLoc().getY() == location.getY() && sign.getLoc().getZ() == location.getZ()){
                 return true;
             }
         }
@@ -146,7 +146,7 @@ public class Managers {
 
     public boolean containPlayer(Player player){
         for (Sign sign : signs){
-            if (sign.getOwner().equals(player.getUniqueId())){
+            if (sign.getOwner() != null && sign.getOwner() == player.getUniqueId()){
                 return true;
             }
         }
@@ -155,7 +155,7 @@ public class Managers {
 
     public Sign getLocation(Location location){
         for (Sign sign : signs){
-            if (sign.getLoc()==location){
+            if (sign.getLoc().getX() ==location.getX() && sign.getLoc().getY() == location.getY() && sign.getLoc().getZ() == location.getZ()){
                 return sign;
             }
         }

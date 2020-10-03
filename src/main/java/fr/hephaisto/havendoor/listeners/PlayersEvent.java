@@ -1,9 +1,9 @@
 package fr.hephaisto.havendoor.listeners;
+import fr.hephaisto.havendoor.Door;
 import fr.hephaisto.havendoor.Sign;
 import fr.hephaisto.havendoor.managers.Managers;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,14 +32,15 @@ public class PlayersEvent implements Listener {
             if(e.getClickedBlock().getType() == Material.OAK_WALL_SIGN || e.getClickedBlock().getType() == Material.OAK_SIGN) {
                 Location location = Objects.requireNonNull(e.getClickedBlock()).getLocation();
                 if (Managers.getManagers().containLocation(location)) {
-                    if (!Managers.getManagers().containPlayer(e.getPlayer())) {
-                        Managers.getManagers().getLocation(location).setOwner(e.getPlayer().getUniqueId());
-                        Managers.getManagers().getDoorById(Managers.getManagers().getLocation(location).getId()).setOwner(e.getPlayer().getUniqueId());
-                        e.getPlayer().sendMessage("Achat effectué avec succès");
-                    } else {
+                    if (Managers.getManagers().containPlayer(e.getPlayer())) {
                         Managers.getManagers().getLocation(location).setOwner(null);
                         Managers.getManagers().getDoorById(Managers.getManagers().getLocation(location).getId()).setOwner(null);
                         e.getPlayer().sendMessage("Vente effectué avec succès");
+                    }
+                    else if (!Managers.getManagers().containPlayer(e.getPlayer())) {
+                        Managers.getManagers().getLocation(location).setOwner(e.getPlayer().getUniqueId());
+                        Managers.getManagers().getDoorById(Managers.getManagers().getLocation(location).getId()).setOwner(e.getPlayer().getUniqueId());
+                        e.getPlayer().sendMessage("Achat effectué avec succès");
                     }
                 }
             }
