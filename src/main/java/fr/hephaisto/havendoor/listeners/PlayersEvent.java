@@ -93,9 +93,9 @@ public class PlayersEvent implements Listener {
 
     @EventHandler
     public void onDestroy (BlockBreakEvent e){
-        /*if (e.getPlayer().isOp()){
+        if (e.getPlayer().isOp()){
             return;
-        }*/
+        }
         if (Managers.getManagers().containDoorLocation(e.getBlock().getLocation()) || Managers.getManagers().containDoorLocation(e.getBlock().getLocation().add(0,-1,0))){
             e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas casser cette porte");
             e.setCancelled(true);
