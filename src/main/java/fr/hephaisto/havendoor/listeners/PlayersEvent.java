@@ -1,5 +1,6 @@
 package fr.hephaisto.havendoor.listeners;
 import fr.hephaisto.havendoor.managers.Managers;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,14 +27,32 @@ public class PlayersEvent implements Listener {
             Location location = e.getClickedBlock().getLocation();
             Location location1 = new Location(location.getWorld(),location.getX(),location.getY()-1,location.getZ());
             if (location1.getBlock().getType() == Material.OAK_DOOR){
-                if (!Managers.getManagers().isDoorOpenNotAllowed(location1, e.getPlayer())) {
+                if (Managers.getManagers().isDoorOpenNotAllowed(location1, e.getPlayer())) {
                     e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas ouvrir cette porte");
+                    if (e.getPlayer().isOp()){
+                        try{
+                            Player player = Bukkit.getPlayer(Managers.getManagers().getDoorByLocation(location1).getOwner());
+                            e.getPlayer().sendMessage(ChatColor.GREEN + "§lCette porte appartient à "+player.getName());
+                        }
+                        catch (NullPointerException exception){
+                            e.getPlayer().sendMessage(ChatColor.AQUA + "§lCette porte appartient à personne") ;
+                        }
+                    }
                     e.setCancelled(true);
                 }
             }
             else if (location1.getBlock().getType() != Material.OAK_DOOR){
-                if (!Managers.getManagers().isDoorOpenNotAllowed(location, e.getPlayer())) {
+                if (Managers.getManagers().isDoorOpenNotAllowed(location, e.getPlayer())) {
                     e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas ouvrir cette porte");
+                    if (e.getPlayer().isOp()){
+                        try{
+                            Player player = Bukkit.getPlayer(Managers.getManagers().getDoorByLocation(location).getOwner());
+                            e.getPlayer().sendMessage(ChatColor.GREEN + "§lCette porte appartient à "+player.getName());
+                        }
+                        catch (NullPointerException exception){
+                            e.getPlayer().sendMessage(ChatColor.AQUA + "§lCette porte n'appartient à personne") ;
+                        }
+                    }
                     e.setCancelled(true);
                 }
             }
@@ -48,8 +67,13 @@ public class PlayersEvent implements Listener {
                 Managers m = Managers.getManagers();
                 Location location = Objects.requireNonNull(e.getClickedBlock()).getLocation();
                 if (m.containLocation(location)) {
-                    e.getPlayer().sendMessage(ChatColor.GOLD + "Êtes-vous sûr? \nRépondez par 'oui' ou par 'non'");
-                    m.getVoting().put(e.getPlayer(),location);
+                    if (m.getLocation(location).getOwner()==null) {
+                        e.getPlayer().sendMessage(ChatColor.GOLD + "Êtes-vous sûr? \nRépondez par 'oui' ou par 'non'");
+                        m.getVoting().put(e.getPlayer(), location);
+                    }
+                    else{
+                        e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas acheter cette porte");
+                    }
                 }
             }
         }
@@ -75,11 +99,7 @@ public class PlayersEvent implements Listener {
                     m.getVoting().remove(e.getPlayer());
                     e.getPlayer().sendMessage(ChatColor.GREEN + "Vente effectué avec succès");
                 } else if (!m.containPlayer(e.getPlayer())) {
-                    m.getLocation(location).setOwner(e.getPlayer().getUniqueId());
-                    m.getDoorById(Managers.getManagers().getLocation(location).getId())
-                            .setOwner(e.getPlayer().getUniqueId());
-                    m.getVoting().remove(e.getPlayer());
-                    e.getPlayer().sendMessage(ChatColor.GREEN + "Achat effectué avec succès");
+                   m.buyDoor(e.getPlayer(),location);
                 }
                 e.setCancelled(true);
             }

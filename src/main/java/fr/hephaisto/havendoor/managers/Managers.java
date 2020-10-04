@@ -3,7 +3,9 @@ package fr.hephaisto.havendoor.managers;
 import fr.hephaisto.havendoor.Door;
 import fr.hephaisto.havendoor.HavenDoor;
 import fr.hephaisto.havendoor.Sign;
+import fr.hephaisto.havendoor.utils.Vault;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -133,17 +135,17 @@ public class Managers {
 
     public boolean isDoorOpenNotAllowed (Location location, Player player){
         if (!containDoorLocation(location)){
-            return true;
+            return false;
         }
         for (Door door: doors){
             if (door.getOwner() != null && door.isOwner(player.getUniqueId()) && door.getLoc().getX() ==
                     location.getX() && door.getLoc().getZ() == location.getZ()) {
                 if (door.getLoc().getY() == location.getY()) {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     public boolean containLocation(Location location){
@@ -182,6 +184,15 @@ public class Managers {
         return null;
     }
 
+    public Door getDoorByLocation(Location location){
+        for (Door door : doors){
+            if (door.getLoc().getX() ==location.getX() && door.getLoc().getY() == location.getY() && door.getLoc().getZ() == location.getZ()){
+                return door;
+            }
+        }
+        return null;
+    }
+
     public Door getDoorById(int id){
         for (Door door: doors){
             if (door.getId() == id){
@@ -193,5 +204,19 @@ public class Managers {
 
     public Map<Player, Location> getVoting() {
         return voting;
+    }
+
+    public void buyDoor(Player player, Location location) {
+        if (Vault.hasEnough(player,instance.getConfig().getInt("prixporte"))) {
+            Vault.withdraw(player,instance.getConfig().getInt("prixporte"));
+            getLocation(location).setOwner(player.getUniqueId());
+            getDoorById(Managers.getManagers().getLocation(location).getId())
+                    .setOwner(player.getUniqueId());
+            getVoting().remove(player);
+            player.sendMessage(ChatColor.GREEN + "Achat effectué avec succès");
+        }
+        else{
+            player.sendMessage("Vous n'avez pas assez d'argent pour acheter cette porte");
+        }
     }
 }

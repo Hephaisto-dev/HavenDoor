@@ -1,8 +1,6 @@
 package fr.hephaisto.havendoor.commands;
 
 import fr.hephaisto.havendoor.managers.Managers;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
