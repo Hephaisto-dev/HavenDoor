@@ -15,7 +15,7 @@ public class Managers {
     private static Managers managers;
     private List<Door> doors;
     private List<Sign> signs;
-    private Map<Player, Boolean> voting;
+    private Map<Player,Location> voting;
 
     public void load(HavenDoor instance) {
         Managers.instance = instance;
@@ -190,7 +190,7 @@ public class Managers {
         return null;
     }
 
-    public Map<Player, Boolean> getVoting() {
+    public Map<Player, Location> getVoting() {
         return voting;
     }
 }

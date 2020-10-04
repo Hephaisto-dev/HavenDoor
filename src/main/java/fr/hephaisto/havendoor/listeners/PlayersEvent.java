@@ -21,7 +21,7 @@ public class PlayersEvent implements Listener {
     public void onDoorOpen (PlayerInteractEvent e){
         if (Objects.requireNonNull(e.getClickedBlock()).getType() == Material.OAK_DOOR && e.getAction()==Action.RIGHT_CLICK_BLOCK){
             Location location = e.getClickedBlock().getLocation();
-            if (Managers.getManagers().isDoorOpenNotAllowed(location,e.getPlayer())){
+            if (!Managers.getManagers().isDoorOpenNotAllowed(location,e.getPlayer())){
                 e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas ouvrir cette porte");
                 e.setCancelled(true);
             }
@@ -37,33 +37,7 @@ public class PlayersEvent implements Listener {
                 Location location = Objects.requireNonNull(e.getClickedBlock()).getLocation();
                 if (m.containLocation(location)) {
                     e.getPlayer().sendMessage(ChatColor.GOLD + "Êtes-vous sûr? \nRépondez par 'oui' ou par 'non'");
-                    m.getVoting().put(e.getPlayer(), null);
-                    long time = 0;
-                    while (m.getVoting().get(e.getPlayer()) == null) {
-                        time++;
-                        if (time == 1000000000){
-                            e.getPlayer().sendMessage("Trop de temps mis");
-                            return;
-                        }
-                    }
-                    if (m.getVoting().get(e.getPlayer())){
-                        if (m.containPlayer(e.getPlayer())) {
-                            m.getLocation(location).setOwner(null);
-                            m.getDoorById(Managers.getManagers().getLocation(location).getId())
-                                    .setOwner(null);
-                            m.getVoting().remove(e.getPlayer());
-                            e.getPlayer().sendMessage(ChatColor.GREEN + "Vente effectué avec succès");
-                        } else if (!m.containPlayer(e.getPlayer())) {
-                            m.getLocation(location).setOwner(e.getPlayer().getUniqueId());
-                            m.getDoorById(Managers.getManagers().getLocation(location).getId())
-                                    .setOwner(e.getPlayer().getUniqueId());
-                            m.getVoting().remove(e.getPlayer());
-                            e.getPlayer().sendMessage(ChatColor.GREEN + "Achat effectué avec succès");
-                        }
-                    }
-                    else{
-                        e.getPlayer().sendMessage(ChatColor.RED + "Opération annulée");
-                    }
+                    m.getVoting().put(e.getPlayer(),location);
                 }
             }
         }
@@ -77,14 +51,29 @@ public class PlayersEvent implements Listener {
 
     @EventHandler
     public void onChat (AsyncPlayerChatEvent e){
-        if (Managers.getManagers().getVoting().get(e.getPlayer()) == null){
+        if (Managers.getManagers().getVoting().containsKey(e.getPlayer())){
+            Managers m = Managers.getManagers();
+            Location location = Managers.getManagers().getVoting().get(e.getPlayer());
             String message = e.getMessage();
             if (message.contains("oui") || message.contains("Oui") || message.contains("OUI")){
-                Managers.getManagers().getVoting().replace(e.getPlayer(),true);
+                if (m.containPlayer(e.getPlayer())) {
+                    m.getLocation(location).setOwner(null);
+                    m.getDoorById(Managers.getManagers().getLocation(location).getId())
+                            .setOwner(null);
+                    m.getVoting().remove(e.getPlayer());
+                    e.getPlayer().sendMessage(ChatColor.GREEN + "Vente effectué avec succès");
+                } else if (!m.containPlayer(e.getPlayer())) {
+                    m.getLocation(location).setOwner(e.getPlayer().getUniqueId());
+                    m.getDoorById(Managers.getManagers().getLocation(location).getId())
+                            .setOwner(e.getPlayer().getUniqueId());
+                    m.getVoting().remove(e.getPlayer());
+                    e.getPlayer().sendMessage(ChatColor.GREEN + "Achat effectué avec succès");
+                }
                 e.setCancelled(true);
             }
             else if (message.contains("non") || message.contains("Non") || message.contains("NON")){
-                Managers.getManagers().getVoting().replace(e.getPlayer(),false);
+                e.getPlayer().sendMessage(ChatColor.RED + "Opération annulée");
+                m.getVoting().remove(e.getPlayer());
                 e.setCancelled(true);
             }
         }
