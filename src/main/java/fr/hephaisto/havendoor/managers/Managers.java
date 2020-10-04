@@ -94,16 +94,19 @@ public class Managers {
     public void addDoorsSign(Player player, String path, Location loc) {
         for(int i = 0; i <= 100; i++){
             if(instance.getConfig().getInt(path+".coordonnees_" + i + ".Y") == 0){
-                instance.getConfig().set(path+".coordonnees_" + i + ".X", (int) loc.getX());
-                instance.getConfig().set(path+".coordonnees_" + i + ".Y", (int) loc.getY());
-                instance.getConfig().set(path+".coordonnees_" + i + ".Z", (int) loc.getZ());
+                double x = (int) loc.getX();
+                double y = (int) loc.getY();
+                double z = (int) loc.getZ();
+                instance.getConfig().set(path+".coordonnees_" + i + ".X", x);
+                instance.getConfig().set(path+".coordonnees_" + i + ".Y", y);
+                instance.getConfig().set(path+".coordonnees_" + i + ".Z", z);
                 instance.getConfig().set(path+".coordonnees_" + i + ".Monde", player.getWorld().getName());
                 instance.getConfig().set(path+".coordonnees_" + i + ".Admin", player.getName());
                 instance.saveConfig();
                 instance.reloadConfig();
-                player.sendMessage("§aVotre nouveau "+path+" a été enregistré avec succès en! " + loc.toString());
+                player.sendMessage("§aVotre nouveau "+path+" a été enregistré avec succès en "+x+" "+y+""+z);
                 if (path.equals("portes")){
-                    Door door = new Door(loc,i,null);
+                    Door door = new Door(new Location(loc.getWorld(),x,y,z),i,null);
                     doors.add(door);
                 }
                 if(path.equals("panneaux")){
@@ -133,13 +136,11 @@ public class Managers {
             return true;
         }
         for (Door door: doors){
-            if (door.getLoc().getX() ==location.getX() && door.getLoc().getY() == location.getY() && door.getLoc().getZ() ==
-                    location.getZ() && door.getOwner()!=null && door.getOwner().equals(player.getUniqueId())){
-                return true;
-            }
-            if (door.getLoc().getX() ==location.getX() && door.getTop() == location.getY() && door.getLoc().getZ() ==
-                    location.getZ() && door.getOwner()!=null && door.getOwner().equals(player.getUniqueId())){
-                return true;
+            if (door.getOwner() != null && door.isOwner(player.getUniqueId()) && door.getLoc().getX() ==
+                    location.getX() && door.getLoc().getZ() == location.getZ()) {
+                if (door.getLoc().getY() == location.getY()) {
+                    return true;
+                }
             }
         }
         return false;
