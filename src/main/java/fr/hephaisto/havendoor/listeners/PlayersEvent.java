@@ -19,10 +19,15 @@ import java.util.Objects;
 public class PlayersEvent implements Listener {
     @EventHandler
     public void onDoorOpen (PlayerInteractEvent e){
-        if (Objects.requireNonNull(e.getClickedBlock()).getType() == Material.OAK_DOOR && e.getAction()==Action.RIGHT_CLICK_BLOCK){
+        if (Objects.requireNonNull(e.getClickedBlock()).getType() == Material.OAK_DOOR && e.getAction()==Action.RIGHT_CLICK_BLOCK && e.getAction()==Action.LEFT_CLICK_BLOCK){
             Location location = e.getClickedBlock().getLocation();
             if (!Managers.getManagers().isDoorOpenNotAllowed(location,e.getPlayer())){
-                e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas ouvrir cette porte");
+                if (e.getAction()==Action.RIGHT_CLICK_BLOCK){
+                    e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas ouvrir cette porte");
+                }
+                else{
+                    e.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas casser cette porte");
+                }
                 e.setCancelled(true);
             }
         }
